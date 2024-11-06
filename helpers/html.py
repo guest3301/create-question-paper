@@ -1,3 +1,4 @@
+indexHTML = '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,15 +36,13 @@
                 <label>Total Marks:</label>
                 <input type="text" name="total_marks" required>
                 <label>Number of Sections:</label>
-                <input type="number" name="num_sections" min="1" required onchange="generateSections(this.value)">
+                <input type="number" name="num_sections" min="0" required onchange="generateSections(this.value)">
                 <div id="sections-container"></div>
                 <button type="submit">Generate Document</button>
             </form>
         </div>
     </div>
     <button class="stt-button" onclick="toggleSTT()">🎤</button>
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
     <script>
         let recognition, sttActive = false, currentInput = null, finalText = '', lastCommandTime = 0;
         async function requestMicPermission() {
@@ -153,13 +152,13 @@
                 sectionDiv.innerHTML = `
                     <h2>Section ${i + 1}</h2>
                     <label>Heading Text:</label>
-                    <input type="text" name="section_${i}_heading" required>
+                    <input type="text" name="section_${i}_heading" value="Q.${i+1} " required>
                     <label>Marks (e.g., '10'):</label>
                     <input type="text" name="section_${i}_marks" required>
                     <label>Number of Blank Lines After Each Question:</label>
                     <input type="number" name="section_${i}_blank_lines" min="0" value="0">
                     <label>Number of Questions in this Section:</label>
-                    <input type="number" name="section_${i}_num_questions" min="1" required onchange="generateQuestions(${i}, this.value)">
+                    <input type="number" name="section_${i}_num_questions" min="0" required onchange="generateQuestions(${i}, this.value)">
                     <div id="questions-container-${i}"></div>
                 `;
                 sectionsContainer.appendChild(sectionDiv);
@@ -174,7 +173,7 @@
                 questionDiv.innerHTML = `
                     <h3>Question ${j + 1}</h3>
                     <label>Question Text:</label>
-                    <input type="text" name="section_${sectionIndex}_question_${j}_text" required>
+                    <input type="text" name="section_${sectionIndex}_question_${j}_text" value="${j+1}. " required>
                     <label>Optional Image for Question:</label>
                     <input type="file" name="section_${sectionIndex}_question_${j}_image" accept="image/*">
                     <label>Does this question need an answer line?</label>
@@ -189,3 +188,4 @@
     </script>
 </body>
 </html>
+'''

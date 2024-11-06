@@ -1,25 +1,16 @@
-from flask import Flask, render_template, request, send_file
-from QuestionPaper import QuestionPaper
-from templates.index import *
-import os
-import subprocess
-import threading
+from flask import Flask, request, send_file
+from helpers.paper import QuestionPaper
+from helpers.html import indexHTML
+import os, subprocess, threading
 
 app = Flask(__name__)
 
 def run_serveo():
-    # Run the SSH command to create a Serveo tunnel
-    command = ["ssh", "-R", "80:localhost:5000", "serveo.net"]
+    command = ["ssh", "-R", "80:localhost:3301", "serveo.net"]
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-    # Read the output and print the URL to the console
     for line in process.stdout:
         if "Forwarding HTTP traffic from" in line:
             print(line.strip())
-
-# Start the Serveo thread
-serveo_thread = threading.Thread(target=run_serveo)
-serveo_thread.start()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -33,22 +24,15 @@ def index():
         question_paper = QuestionPaper(template_path, output_path, global_font_size=12)
         question_paper.replace_placeholders(class_name, subject, term, total_marks)
         num_sections = int(request.form['num_sections'])
-        
         for i in range(num_sections):
             heading_text = request.form[f'section_{i}_heading']
             marks = request.form[f'section_{i}_marks']
             blank_lines = int(request.form[f'section_{i}_blank_lines'])
-            
-            questions = []
-            question_images = []
-            answer_lines = []
-
+            questions, question_images, answer_lines = [], [], []
             num_questions = int(request.form[f'section_{i}_num_questions'])
             for j in range(num_questions):
                 question_text = request.form[f'section_{i}_question_{j}_text']
                 questions.append(question_text)
-                
-                # Get optional image path or None if not provided
                 image_path = request.files.get(f'section_{i}_question_{j}_image')
                 if image_path and image_path.filename:
                     image_filename = f"uploads/{image_path.filename}"
@@ -72,5 +56,6 @@ def index():
     return indexHTML
 
 if __name__ == '__main__':
+    threading.Thread(target=run_serveo).start()
     os.makedirs('uploads', exist_ok=True)
     app.run(debug=False, port=3301, host='0.0.0.0')
