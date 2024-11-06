@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Paper - Just a prototype</title>
+    <style>
+        /* CSS styling */
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .container { width: 80%; margin: auto; overflow: hidden; }
+        header { background: #333; color: #fff; padding-top: 20px; border-bottom: #77aaff 3px solid; }
+        header h1 { margin: 0; }
+        .form-container { background: #fff; padding: 20px; margin-top: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .form-container h1 { margin-bottom: 20px; }
+        .form-container label { display: block; margin-bottom: 5px; }
+        .form-container input, .form-container select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .form-container button { display: inline-block; background: #333; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .form-container button:hover { background: #555; }
+        .question-field, .section-field { margin-bottom: 15px; }
+        .question-field button, .section-field button { background: #e74c3c; color: #fff; margin-top: 5px; }
+        .question-field button:hover, .section-field button:hover { background: #c0392b; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Question Paper</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-container">
+            <h1>Create Question Paper</h1>
+            <form method="POST" enctype="multipart/form-data">
+                <label>Class Name:</label>
+                <input type="text" name="class_name" required>
+
+                <label>Subject:</label>
+                <input type="text" name="subject" required>
+
+                <label>Term:</label>
+                <input type="text" name="term" required>
+
+                <label>Total Marks:</label>
+                <input type="text" name="total_marks" required>
+
+                <label>Number of Sections:</label>
+                <input type="number" name="num_sections" min="1" required onchange="generateSections(this.value)">
+
+                <div id="sections-container"></div>
+
+                <button type="submit">Generate Document</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Generates sections dynamically based on input
+        function generateSections(numSections) {
+            const sectionsContainer = document.getElementById('sections-container');
+            sectionsContainer.innerHTML = ''; // Clear previous sections
+
+            for (let i = 0; i < numSections; i++) {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.classList.add('section-field');
+                sectionDiv.innerHTML = `
+                    <h2>Section ${i + 1}</h2>
+                    <label>Heading Text:</label>
+                    <input type="text" name="section_${i}_heading" required>
+
+                    <label>Marks (e.g., '10'):</label>
+                    <input type="text" name="section_${i}_marks" required>
+
+                    <label>Number of Blank Lines After Each Question:</label>
+                    <input type="number" name="section_${i}_blank_lines" min="0" value="0">
+
+                    <label>Number of Questions in this Section:</label>
+                    <input type="number" name="section_${i}_num_questions" min="1" required onchange="generateQuestions(${i}, this.value)">
+
+                    <div id="questions-container-${i}"></div>
+                `;
+                sectionsContainer.appendChild(sectionDiv);
+            }
+        }
+
+        // Generates questions within each section
+        function generateQuestions(sectionIndex, numQuestions) {
+            const questionsContainer = document.getElementById(`questions-container-${sectionIndex}`);
+            questionsContainer.innerHTML = ''; // Clear previous questions
+
+            for (let j = 0; j < numQuestions; j++) {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question-field');
+                questionDiv.innerHTML = `
+                    <h3>Question ${j + 1}</h3>
+                    <label>Question Text:</label>
+                    <input type="text" name="section_${sectionIndex}_question_${j}_text" required>
+
+                    <label>Optional Image for Question:</label>
+                    <input type="file" name="section_${sectionIndex}_question_${j}_image" accept="image/*">
+
+                    <label>Does this question need an answer line?</label>
+                    <select name="section_${sectionIndex}_question_${j}_answer_line">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                `;
+                questionsContainer.appendChild(questionDiv);
+            }
+        }
+    </script>
+</body>
+</html>
