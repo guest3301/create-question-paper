@@ -56,6 +56,6 @@ def index():
     return indexHTML
 
 if __name__ == '__main__':
-    threading.Thread(target=run_serveo).start()
+    #threading.Thread(target=run_serveo).start()
     os.makedirs('uploads', exist_ok=True)
     app.run(debug=False, port=3301, host='0.0.0.0')
